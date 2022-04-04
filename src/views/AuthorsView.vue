@@ -1,9 +1,9 @@
 <script setup>
-import Authors from "@/components/Authors.vue";
+import AuthorsItem from "@/components/AuthorsItem.vue";
 </script>
 
 <template>
   <main>
-    <Authors />
+    <AuthorsItem />
   </main>
 </template>
