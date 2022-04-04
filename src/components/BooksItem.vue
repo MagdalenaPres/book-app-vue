@@ -4,6 +4,11 @@
             <slot name="header"></slot>
         </p>
     </div>
+  <div class="add-books"> 
+     <button id="add">
+        Add book
+     </button>
+  </div>
   <div class="books-table">
     <table class="table table-bordered table-stripped">
         <thead>
@@ -65,6 +70,28 @@ export default {
     .books-table{
         text-align: center;
         margin-top: 20px;
+    }
+    #add{
+      align-items: center;
+      background: linear-gradient(to bottom right, #7ed276, #e8fde4);
+      border: 0 solid #E2E8F0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      box-sizing: border-box;
+      color: #1A202C;
+      display: inline-flex;
+      font-family: Inter, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      height: 56px;
+      justify-content: center;
+      padding: 24px;
+      text-decoration: none;
+      width: auto;
+      border-radius: 8px;
+      cursor: pointer;
+      float: right;
+      margin-right: 120px;
+      margin-bottom: 20px;
     }
 
 </style>

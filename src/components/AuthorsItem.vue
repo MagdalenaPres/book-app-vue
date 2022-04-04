@@ -4,6 +4,14 @@
             <slot name="header"></slot>
         </p>
     </div>
+    <div class="add-authors"> 
+     <button class="add"
+        data-bs-toggle="modal"
+        data-bs-target="#AddAuthorModal"
+      >
+      Add author
+     </button>
+  </div>
   <div class="authors-table">
     <table class="table table-bordered table-stripped">
         <thead>
@@ -11,6 +19,7 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>Surname</th>
+                <th>Books</th>
                 <th>Options</th>
             </tr>
         </thead>
@@ -19,8 +28,10 @@
                 <td>{{ a.id }}</td>
                 <td>{{ a.name }}</td>
                 <td>{{ a.surname }}</td>
+                <td></td>
                 <td>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                  <svg xmlns="http://www.w3.org/2000/svg" 
+                      width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                     <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                     <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
                   </svg>
@@ -32,6 +43,17 @@
         </tbody>
     </table>
   </div>
+
+  <div class="container p-5">
+      <div
+        class="modal fade"
+        id="AddAuthorModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+      >
+      </div>
+    </div>
 </template>
 
 <script>
@@ -45,13 +67,39 @@ export default {
       post: null,
       error: null,
       allAuthors: null,
+      authorBooks: null,
+      submitting: false,
+      success: false,
     }
   },
   mounted () {
     axios
       .get('http://localhost:8080/get/authors')
       .then(response => (this.allAuthors = response.data))
+
+    //to nie dziala
+    /*for(b.id in this.allAuthors)
+      {
+        console.log("b"+b)
+        axios
+          .get('http://localhost:8080/getbooks/author/'+b)
+          .then(response => (this.authorBooks = response.data))
+          .then(response => console.log(response))
+      }*/ 
   },
+  methods:{
+    searchForAuthor(authorId) {
+      axios
+        .get('http://localhost:8080/get/author/'+authorId)
+        .then(response => (this.allAuthors = response.data))
+
+      this.updatedAuthor = {
+        id: searchedAuthor[0].id,
+        Name: searchedAuthor[0].Name,
+        Surname: searchedAuthor[0].Surname,
+      };
+    },
+  }
 }
 </script>
 
@@ -64,7 +112,28 @@ export default {
     }
     .authors-table{
         text-align: center;
-        margin-top: 20px;
+    }
+    .add{
+      align-items: center;
+      background: linear-gradient(to bottom right, #7ed276, #e8fde4);
+      border: 0 solid #E2E8F0;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      box-sizing: border-box;
+      color: #1A202C;
+      display: inline-flex;
+      font-family: Inter, sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      height: 56px;
+      justify-content: center;
+      padding: 24px;
+      text-decoration: none;
+      width: auto;
+      border-radius: 8px;
+      cursor: pointer;
+      float: right;
+      margin-right: 120px;
+      margin-bottom: 20px;
     }
 
 </style>
