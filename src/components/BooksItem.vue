@@ -8,21 +8,43 @@
     <table class="table table-bordered table-stripped">
         <thead>
             <tr>
+                <th>Id</th>
                 <th>Title</th>
                 <th>Author</th>
                 <th>Pages</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td> </td>
-                <td> </td>
-                <td> </td>
-            </tr>
+            <tr v-for="book in allBooks" :key="book.id">
+                <td>{{ book.id }}</td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.pages }}</td>
+          </tr>
         </tbody>
     </table>
   </div>
 </template>
+
+<script>
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+
+export default {
+  data() {
+    return {
+      loading: false,
+      post: null,
+      error: null,
+      allBooks: null,
+    }
+  },
+  mounted () {
+    axios
+      .get('http://localhost:8080/get/books')
+      .then(response => (this.allBooks = response))
+  },
+}
+</script>
 
 <style scoped>
     .books-title{

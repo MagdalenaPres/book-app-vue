@@ -1,5 +1,5 @@
 <script setup>
-import Books from "@/components/Books.vue";
+import Books from "@/components/BooksItem.vue";
 </script>
 
 <template>
