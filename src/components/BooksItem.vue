@@ -4,6 +4,14 @@
             <slot name="header"></slot>
         </p>
     </div>
+     <div> 
+      <form class="adding">
+        <input v-model="title" placeholder="Enter title">
+        <input v-model="pages" placeholder="Enter pages">
+        <input v-model="author" placeholder="Enter author id">
+        <button type="submit" @click="addBook">Add book</button>
+      </form>
+    </div>
   <div class="books-table">
     <table class="table table-bordered table-stripped">
         <thead>
@@ -20,7 +28,7 @@
                 <td>{{ book.title }}</td>
                 <td>{{ book.pages }}</td>
                 <td>
-                  <svg xmlns="http://www.w3.org/2000/svg" 
+                  <svg xmlns="http://www.w3.org/2000/svg" v-on:click="showModal(book)"
                    width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                     <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                     <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
@@ -34,25 +42,32 @@
         </tbody>
     </table>
   </div>
-  <br>
-  
-  <div> 
-      <form class="adding">
-        <input v-model="title" placeholder="Enter title">
-        <input v-model="pages" placeholder="Enter pages">
-        <input v-model="author" placeholder="Enter author id">
-        <button type="submit" @click="addBook">Add book</button>
-      </form>
+  <div
+    className="update-modal"
+    id="modal"
+    role="dialog"
+    v-show="isModalVisible">
+    <div className="box">
+      <div className="modal-content">
+        <div className="modal-header">
+        <button type="button" className="close" v-on:click="closeModal">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div className="modal-body">
+          <form className="update-book-form">
+            Id:
+            <input className="input-data" v-model="this.bookId">
+            Title:
+            <input className="input-data" v-model="this.bookTitle">
+            Pages:
+            <input className="input-data" v-model="this.bookPages">
+            <button id="update" type="submit" v-on:click="updateBook">Update book</button>
+        </form>
+        </div>
+      </div>
     </div>
-    <br>
-    <div> 
-      <form class="updating">
-        <input v-model="newTitle" placeholder="Enter title">
-        <input v-model="newPages" placeholder="Enter pages">
-        <input v-model="newAuthor" placeholder="Enter author id">
-        <button id="update" type="submit" @click="updateBook">Update book</button>
-      </form>
-  </div>  
+  </div>
 </template>
 
 <script>
@@ -62,8 +77,12 @@ import 'mdb-vue-ui-kit/css/mdb.min.css';
 export default {
   data() {
     return {
+      isModalVisible: false,
       loading: false,
-      bookId: 1,
+      bookId: null,
+      bookTitle: null,
+      bookPages: null,
+      bookAuthor: null,
       post: null,
       error: null,
       allBooks: null,
@@ -87,9 +106,9 @@ export default {
     updateBook() {
        axios
         .put('http://localhost:8080/update/book/' + this.bookId, {
-            title: this.newTitle,
-            pages: this.newPages,
-            author: this.newAuthor
+            title: this.bookTitle,
+            pages: this.bookPages,
+            id: this.bookId
           }
         )
     },
@@ -97,6 +116,17 @@ export default {
        axios
         .delete('http://localhost:8080/delete/book/' + id)
       window.location.reload();
+    },
+    showModal(book) {
+      this.isModalVisible = true;
+  
+      this.bookId = book.id,
+      this.bookTitle = book.title,
+      this.bookPages = book.pages
+      console.log(this.bookId)
+    },
+    closeModal() {
+      this.isModalVisible = false;
     }
   }
 }
@@ -160,6 +190,45 @@ export default {
       float: right;
       margin-right: 120px;
       margin-bottom: 20px;
+    }
+    .update-modal {
+      position: fixed;
+	    left: 0;
+	    top: 0;
+	    width: 100%;
+	    height: 100%;
+      z-index: 10040;
+      overflow: auto;
+      overflow-y: auto;
+	    background-color:rgba(0,0,0,0.6);
+    }
+
+    .update-modal.show{
+    	visibility:visible;
+    	opacity: 1;
+    }
+
+    .update-modal .box{
+    	background-color:#ffffff;
+      width: 200px;
+      height: 200px;
+    	position: absolute;
+    	left: 50%;
+    	top:50%;
+    	transform:translate(-50%,-50%);
+    	margin-left: 50px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .update-modal.show .box{
+    	opacity: 1;
+    	margin-left: 0;
+    }
+    .modal-content{
+      text-align: center;
+    }
+    .input-data{
+      width: -webkit-fill-available;
     }
 
 </style>

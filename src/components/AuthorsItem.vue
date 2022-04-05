@@ -4,6 +4,16 @@
             <slot name="header"></slot>
         </p>
     </div>
+    <div> 
+  <div class="add-authors"> 
+     <form class="adding">
+       <input v-model="name" placeholder="Enter Name">
+       <input v-model="surname" placeholder="Enter Surname">
+       <button id="add" type="submit" v-on:click="addAuthor">Add author</button>
+     </form>
+   </div>
+   </div> 
+   <br/>
   <div class="authors-table">
     <table class="table table-bordered table-stripped">
         <thead>
@@ -20,9 +30,9 @@
                 <td>{{ a.id }}</td>
                 <td>{{ a.name }}</td>
                 <td>{{ a.surname }}</td>
-                <td></td>
+                <td v-for="b in authorBooks" :key="b.id"></td>
                 <td>
-                  <svg xmlns="http://www.w3.org/2000/svg"
+                  <svg xmlns="http://www.w3.org/2000/svg" v-on:click="showModal(a)"
                       width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
                     <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
                     <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
@@ -36,33 +46,32 @@
         </tbody>
     </table>
   </div>
-
-  <div class="container p-5">
-      <div
-        class="modal fade"
-        id="AddAuthorModal"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
+<div
+    className="update-modal"
+    id="modal"
+    role="dialog"
+    v-show="isModalVisible">
+    <div className="box">
+      <div className="modal-content">
+        <div className="modal-header">
+        <button type="button" className="close" v-on:click="closeModal">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <div className="modal-body">
+          <form className="update-author-form">
+            Id:
+            <input className="input-data" v-model="this.authorId">
+            Name:
+            <input className="input-data" v-model="this.authorName">
+            Surname:
+            <input className="input-data" v-model="this.authorSurname">
+            <button id="update" type="submit" v-on:click="updateAuthor">Update author</button>
+        </form>
+        </div>
       </div>
     </div>
-     <div class="add-authors"> 
-        <form class="adding">
-          <input v-model="name" placeholder="Enter Name">
-          <input v-model="surname" placeholder="Enter Surname">
-          <button id="add" type="submit" v-on:click="addAuthor">Add author</button>
-        </form>
-      </div>
-      <br>   
-      <div class="update-authors"> 
-        <form class="updating">
-          <input v-model="newId" placeholder="Enter Id">
-          <input v-model="newName" placeholder="Enter Name">
-          <input v-model="newSurname" placeholder="Enter Surname">
-          <button id="update" type="submit" v-on:click="updateAuthor">Update author</button>
-        </form>
-      </div>
+  </div>
 </template>
 
 <script>
@@ -72,8 +81,11 @@ import 'mdb-vue-ui-kit/css/mdb.min.css';
 export default {
   data() {
     return {
+      isModalVisible: false,
       loading: false,
       authorId: null,
+      authorName: null,
+      authorSurname: null,
       post: null,
       error: null,
       allAuthors: null,
@@ -86,16 +98,7 @@ export default {
     axios
       .get('http://localhost:8080/get/authors')
       .then(response => (this.allAuthors = response.data))
-
-    //to nie dziala
-    /*for(b.id in this.allAuthors)
-      {
-        console.log("b"+b)
-        axios
-          .get('http://localhost:8080/getbooks/author/'+b)
-          .then(response => (this.authorBooks = response.data))
-          .then(response => console.log(response))
-      }*/ 
+      .then(response => this.getAuthorBooks(response))
   },
   methods:{
     searchForAuthor(authorId) {
@@ -109,6 +112,15 @@ export default {
         Surname: searchedAuthor[0].Surname,
       };
     },
+    getAuthorBooks(authors){
+      for(var a in authors){
+        axios
+          .get('http://localhost:8080/getbooks/author/' + authors[a].id)
+          .then(response => (this.allAuthors = response.data))
+          .then(response => this.getAuthorBooks(response))
+        console.log(authors[a])
+      }
+    },
     addAuthor() {
        axios
         .post('http://localhost:8080/create/author/', {
@@ -120,8 +132,9 @@ export default {
     updateAuthor() {
        axios
         .put('http://localhost:8080/update/author/' + this.authorId, {
-            name: this.newName,
-            surname: this.newSurname
+            id: this.authorId,
+            name: this.authorName,
+            surname: this.authorSurname
           }
         )
     },
@@ -129,6 +142,16 @@ export default {
        axios
         .delete('http://localhost:8080/delete/author/' + id)
       window.location.reload();
+    },
+    showModal(a) {
+        this.isModalVisible = true;
+  
+        this.authorName = a.name
+        this.authorSurname = a.surname
+        this.authorId = a.id
+    },
+    closeModal() {
+      this.isModalVisible = false;
     }
   }
 }
@@ -165,6 +188,7 @@ export default {
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       box-sizing: border-box;
       color: #1A202C;
+      margin-block: 5px;
     }
     .add{
       align-items: center;
@@ -188,5 +212,46 @@ export default {
       margin-right: 120px;
       margin-bottom: 20px;
     }
+
+    .update-modal {
+      position: fixed;
+	    left: 0;
+	    top: 0;
+	    width: 100%;
+	    height: 100%;
+      z-index: 10040;
+      overflow: auto;
+      overflow-y: auto;
+	    background-color:rgba(0,0,0,0.6);
+    }
+
+    .update-modal.show{
+    	visibility:visible;
+    	opacity: 1;
+    }
+
+    .update-modal .box{
+    	background-color:#ffffff;
+      width: 200px;
+      height: 200px;
+    	position: absolute;
+    	left: 50%;
+    	top:50%;
+    	transform:translate(-50%,-50%);
+    	margin-left: 50px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .update-modal.show .box{
+    	opacity: 1;
+    	margin-left: 0;
+    }
+    .modal-content{
+      text-align: center;
+    }
+    .input-data{
+      width: -webkit-fill-available;
+    }
+  
 
 </style>
