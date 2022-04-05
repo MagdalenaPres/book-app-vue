@@ -21,7 +21,6 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>Surname</th>
-                <th>Books</th>
                 <th>Options</th>
             </tr>
         </thead>
@@ -30,7 +29,6 @@
                 <td>{{ a.id }}</td>
                 <td>{{ a.name }}</td>
                 <td>{{ a.surname }}</td>
-                <td v-for="b in authorBooks" :key="b.id"></td>
                 <td>
                   <svg xmlns="http://www.w3.org/2000/svg" v-on:click="showModal(a)"
                       width="20" height="20" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
@@ -89,7 +87,6 @@ export default {
       post: null,
       error: null,
       allAuthors: null,
-      authorBooks: null,
       submitting: false,
       success: false,
     }
@@ -98,7 +95,6 @@ export default {
     axios
       .get('http://localhost:8080/get/authors')
       .then(response => (this.allAuthors = response.data))
-      .then(response => this.getAuthorBooks(response))
   },
   methods:{
     searchForAuthor(authorId) {
@@ -111,15 +107,6 @@ export default {
         Name: searchedAuthor[0].Name,
         Surname: searchedAuthor[0].Surname,
       };
-    },
-    getAuthorBooks(authors){
-      for(var a in authors){
-        axios
-          .get('http://localhost:8080/getbooks/author/' + authors[a].id)
-          .then(response => (this.allAuthors = response.data))
-          .then(response => this.getAuthorBooks(response))
-        console.log(authors[a])
-      }
     },
     addAuthor() {
        axios
