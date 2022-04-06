@@ -11,10 +11,18 @@
 
 <style scoped>
 .item {
-  margin-top: 5rem;
+  margin-top: 4rem;
   display: flex;
   flex-direction: column;
   text-align: center;
+  height: 80vh;
+  background-image: 
+	linear-gradient( rgba(255, 255, 255, 0.8),rgba(179, 255, 131, 0.8));
+	  background-size: cover;
+  	background-position: top;
+  	position: relative;
+
+  	clip-path: polygon(0 0, 100% 0, 100% 58vh, 0 100%);
 }
 
 .details {
@@ -25,6 +33,7 @@
 }
 
 .header{
+    margin-top: 6rem;
     font-size: 3.5rem;
     text-align: center;
     font-weight: bold;
@@ -36,7 +45,5 @@
     );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-align: center;
 }
-
 </style>

@@ -6,10 +6,16 @@
     </div>
     <div> 
   <div class="add-authors"> 
-     <form class="adding">
-       <input v-model="name" placeholder="Enter Name">
-       <input v-model="surname" placeholder="Enter Surname">
-       <button id="add" type="submit" v-on:click="addAuthor">Add author</button>
+     <p v-if="errorsAdding.length" class="errors">
+            <b>Please correct the following error(s):</b>
+            <ul>
+              <div v-for="error in errorsAdding" :key="error.id">{{ error }}</div>
+            </ul>
+        </p>
+     <form class="adding" @submit="checkFormAdding">
+       <input v-model="name" placeholder="Enter Name" class="item">
+       <input v-model="surname" placeholder="Enter Surname" class="item">
+       <button id="add" type="submit" v-on:click="addAuthor" class="item">Add author</button>
      </form>
    </div>
    </div> 
@@ -57,13 +63,19 @@
         </button>
         </div>
         <div className="modal-body">
-          <form className="update-author-form">
+          <form className="update-author-form" @submit="checkForm">
+             <p v-if="errors.length">
+              <b>Please correct the following error(s):</b>
+              <ul>
+                <li v-for="error in errors" :key="error.id">{{ error }}</li>
+              </ul>
+            </p>
             Id:
-            <input className="input-data" v-model="this.authorId">
+            <input  type="text" className="input-data" v-model="this.authorId">
             Name:
-            <input className="input-data" v-model="this.authorName">
+            <input  type="text" className="input-data" v-model="this.authorName">
             Surname:
-            <input className="input-data" v-model="this.authorSurname">
+            <input  type="text" className="input-data" v-model="this.authorSurname">
             <button id="update" type="submit" v-on:click="updateAuthor">Update author</button>
         </form>
         </div>
@@ -89,6 +101,9 @@ export default {
       allAuthors: null,
       submitting: false,
       success: false,
+      errors: [],
+      errorsAdding: [],
+      name: null, surname: null
     }
   },
   mounted () {
@@ -139,7 +154,43 @@ export default {
     },
     closeModal() {
       this.isModalVisible = false;
-    }
+    },
+    checkForm: function (e) {
+      if (this.authorId && this.authorName && this.authorSurname) {
+        return true;
+      }
+
+      this.errors = [];
+
+      if (!this.authorId) {
+        this.errors.push('Id required.');
+      }
+      if (!this.authorName) {
+        this.errors.push('Name required.');
+      }
+      if (!this.authorSurname){
+        this.errors.push('Surname required.');
+      }
+      if(this.authorId < 1){
+        this.errors.push('Wrong id');
+      }
+      e.preventDefault();
+    },
+
+    checkFormAdding: function (e) {
+      if (this.name && this.surname) {
+        return true;
+      }
+      this.errorsAdding = [];
+
+      if (!this.name) {
+        this.errorsAdding.push('Name required.');
+      }
+      if (!this.surname) {
+        this.errorsAdding.push('Surname required.');
+      }
+      e.preventDefault();
+    },
   }
 }
 </script>
@@ -147,14 +198,21 @@ export default {
 <style scoped>
 
     .adding {
-      margin-left: 30%;
-      max-width: 700px;
-      display: flex;
-      justify-content: space-between;
+    display: flex;
+    justify-content: space-around;
+    max-width: 900px;
+    margin-left: 250px;
+    }
+    .item{
+      padding:10px;
+      margin:10px 0;
+      border:0;
+      box-shadow:0 0 15px 4px rgba(0,0,0,0.06);
+      border-radius:10px;
     }
     .updating {
-      margin-left: 20%;
-      max-width: 900px;
+      margin-left: 30%;
+      max-width: 700px;
       display: flex;
       justify-content: space-between;
     }
@@ -169,13 +227,16 @@ export default {
     }
 
     button {
+      width: 150px;
       align-items: center;
       background: linear-gradient(to bottom right, #7ed276, #e8fde4);
       border: 0 solid #E2E8F0;
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
       box-sizing: border-box;
       color: #1A202C;
-      margin-block: 5px;
+    }
+    input, button {
+      height: 50px;
     }
     .add{
       align-items: center;
@@ -199,7 +260,25 @@ export default {
       margin-right: 120px;
       margin-bottom: 20px;
     }
-
+    input[type=text], select {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      display: inline-block;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    input[type=submit] {
+      width: 100%;
+      background-color: #4CAF50;
+      color: white;
+      padding: 14px 20px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
     .update-modal {
       position: fixed;
 	    left: 0;
@@ -218,14 +297,12 @@ export default {
     }
 
     .update-modal .box{
-    	background-color:#ffffff;
-      width: 200px;
-      height: 200px;
+      background-color:#ffffff;
+      width: 300px;
+      height: 400px;
     	position: absolute;
-    	left: 50%;
-    	top:50%;
     	transform:translate(-50%,-50%);
-    	margin-left: 50px;
+      margin: 300px 750px;
       border-radius: 4px;
       text-align: center;
     }
@@ -239,6 +316,12 @@ export default {
     .input-data{
       width: -webkit-fill-available;
     }
-  
+    .modal-header{
+      justify-content: center;
+    }
+    .errors{
+    justify-content: center;
+    text-align: center;
+    }
 
 </style>

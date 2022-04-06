@@ -32,7 +32,7 @@ a,
 .green {
   float: left;
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
+  color: rgb(196, 227, 191);
   transition: 0.4s;
   font-size: 17px;
 }
